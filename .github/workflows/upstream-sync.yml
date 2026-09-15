@@ -1,0 +1,46 @@
+name: Preserve upstream repository
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/upstream-sync.yml
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: preserve-upstream
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mirror upstream branches and tags
+        shell: bash
+        env:
+          UPSTREAM_URL: https://github.com/bilawalsidhu/gods-eye-view.git
+          DESTINATION_URL: https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+        run: |
+          set -euo pipefail
+
+          git clone --mirror "$UPSTREAM_URL" upstream.git
+          cd upstream.git
+
+          while IFS= read -r ref; do
+            branch="${ref#refs/heads/}"
+            git push "$DESTINATION_URL" "$ref:refs/heads/upstream/$branch" --force
+          done < <(git for-each-ref --format='%(refname)' refs/heads/)
+
+          git push "$DESTINATION_URL" 'refs/tags/*:refs/tags/*' --force
+
+      - name: Preservation policy
+        shell: bash
+        run: |
+          echo 'This workflow intentionally does not delete destination branches or tags.'
+          echo 'If upstream removes content or disappears, the last preserved copy remains in this repository.'
