@@ -44,3 +44,5 @@ jobs:
         run: |
           echo 'This workflow intentionally does not delete destination branches or tags.'
           echo 'If upstream removes content or disappears, the last preserved copy remains in this repository.'
+
+# Control branch is intentionally separate from the preserved upstream branches.
