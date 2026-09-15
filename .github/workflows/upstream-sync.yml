@@ -18,10 +18,10 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  mirror:
+  snapshot:
     runs-on: ubuntu-latest
     steps:
-      - name: Mirror upstream branches and tags
+      - name: Create preservation snapshot
         shell: bash
         env:
           UPSTREAM_URL: https://github.com/bilawalsidhu/gods-eye-view.git
@@ -29,20 +29,53 @@ jobs:
         run: |
           set -euo pipefail
 
-          git clone --mirror "$UPSTREAM_URL" upstream.git
-          cd upstream.git
+          git clone --depth=1 "$UPSTREAM_URL" source
+          upstream_sha="$(git -C source rev-parse HEAD)"
 
-          while IFS= read -r ref; do
-            branch="${ref#refs/heads/}"
-            git push "$DESTINATION_URL" "$ref:refs/heads/upstream/$branch" --force
-          done < <(git for-each-ref --format='%(refname)' refs/heads/)
+          git clone "$DESTINATION_URL" backup
+          cd backup
 
-          git push "$DESTINATION_URL" 'refs/tags/*:refs/tags/*' --force
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if git ls-remote --exit-code --heads origin 'refs/heads/upstream/main' >/dev/null 2>&1; then
+            git checkout -B upstream/main origin/upstream/main
+          else
+            git checkout --orphan upstream/main
+            git rm -rf . >/dev/null 2>&1 || true
+          fi
+
+          rsync -a --delete \
+            --exclude='.git/' \
+            --exclude='.github/workflows/' \
+            ../source/ ./
+
+          rm -rf _upstream_workflows
+          if [ -d ../source/.github/workflows ]; then
+            mkdir -p _upstream_workflows
+            cp -a ../source/.github/workflows/. _upstream_workflows/
+          fi
+
+          {
+            echo "Upstream: https://github.com/bilawalsidhu/gods-eye-view"
+            echo "Upstream commit: $upstream_sha"
+            echo "Preserved at: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            echo "Note: upstream .github/workflows files are preserved under _upstream_workflows because GitHub blocks Actions tokens from writing third-party workflow files directly."
+          } > UPSTREAM_BACKUP_INFO.txt
+
+          git ls-remote --tags "$UPSTREAM_URL" > UPSTREAM_TAGS.txt
+
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Backup already matches upstream commit $upstream_sha"
+            exit 0
+          fi
+
+          git commit -m "Preserve upstream $upstream_sha"
+          git push origin upstream/main
 
       - name: Preservation policy
         shell: bash
         run: |
-          echo 'This workflow intentionally does not delete destination branches or tags.'
-          echo 'If upstream removes content or disappears, the last preserved copy remains in this repository.'
-
-# Control branch is intentionally separate from the preserved upstream branches.
+          echo 'The backup branch is only updated after a successful upstream clone.'
+          echo 'If upstream disappears or becomes unreachable, this job fails before modifying the preserved branch.'
