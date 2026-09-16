@@ -1,4 +1,4 @@
 Upstream: https://github.com/bilawalsidhu/gods-eye-view
-Upstream commit: 2746ec753ce4d6ebafee881a212c3f327907c673
-Preserved at: 2026-09-15T17:11:30Z
+Upstream commit: a65d9d85f1faa06ae7df235d7fa8a29b026b7a5b
+Preserved at: 2026-09-16T11:42:20Z
 Note: upstream .github/workflows files are preserved under _upstream_workflows because GitHub blocks Actions tokens from writing third-party workflow files directly.
