@@ -2,3 +2,7 @@
 b6da93b8ace6947580030cb2b4dc2416f263f07e	refs/tags/v0.1.0^{}
 451b0f692efd8a37e96fbfae297ea1529fdcf331	refs/tags/v0.1.1
 65bc522f49dc1166eca533996be8e789ad36cfe5	refs/tags/v0.1.1^{}
+a2f79d5982211a6b3b0c172fb13e04c860b3675e	refs/tags/v0.2.0
+b1a958242cfcd0a01cb68ea6035a1da037a58cfd	refs/tags/v0.2.0^{}
+c8a24d9d6b05075bdc048b3d11f8bf42a303087b	refs/tags/v0.2.1
+aa16b7c3b0166a89d8c7a6089e0aff53a22faaee	refs/tags/v0.2.1^{}
