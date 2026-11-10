@@ -242,6 +242,11 @@
     "modules": ["src/data/adsbLolFallback.js", "src/sources/adsbFields.js"],
     "external": []
   },
+  "planespotters-source": {
+    "exports": ["./sources/planespotters"],
+    "modules": ["src/data/planespottersPhoto.js"],
+    "external": []
+  },
   "place-providers": {
     "runtime": "node",
     "exports": ["./server/providers/places"],
@@ -1395,7 +1400,8 @@
       "src/sources/live/contract.js",
       "src/sources/live/index.js",
       "src/sources/live/standalone.js",
-      "src/sources/live/vessels.js"
+      "src/sources/live/vessels.js",
+      "src/data/planespottersPhoto.js"
     ],
     "external": []
   },
@@ -1462,7 +1468,8 @@
       "src/i18n/locales/zh-Hant.json",
       "src/ui/unitLabels.js",
       "src/time/worldClock.js",
-      "src/time/julian.js"
+      "src/time/julian.js",
+      "src/data/planespottersPhoto.js"
     ],
     "external": ["cesium"]
   },
@@ -2108,6 +2115,7 @@
       "src/layers/alpr/overlay.js",
       "src/layers/alpr/source.js",
       "src/data/inputOwnership.js",
+      "src/data/displayText.js",
       "src/layers/alpr/records.js",
       "src/data/tomtomTiles.js",
       "src/data/tileBudget.js",
@@ -3016,6 +3024,7 @@
       "src/voice/chatPreferences.js",
       "src/voice/panelLayout.js",
       "src/voice/voiceMiniPreview.js",
+      "src/data/displayText.js",
       "src/voice/gevActions.js",
       "src/agent/worldPacket.js",
       "src/voice/speech.js",
@@ -3438,7 +3447,8 @@
       "src/layers/satellites/classes.js",
       "src/layers/satellites/sensors.js",
       "src/data/ucsSatellites.js",
-      "src/data/imagingSensors.js"
+      "src/data/imagingSensors.js",
+      "src/data/planespottersPhoto.js"
     ],
     "external": [
       "hls.js",
@@ -3863,6 +3873,7 @@
       "src/search/coordinateParser.js",
       "src/search/presetGeocoder.js",
       "src/app/localGeojsonServices.js",
+      "src/data/displayText.js",
       "src/layers/alpr/records.js",
       "src/layers/earthquakes/records.js",
       "src/app/layers/perimeters.js",
@@ -4098,7 +4109,8 @@
       "src/layers/satellites/classes.js",
       "src/layers/satellites/sensors.js",
       "src/data/ucsSatellites.js",
-      "src/data/imagingSensors.js"
+      "src/data/imagingSensors.js",
+      "src/data/planespottersPhoto.js"
     ],
     "external": [
       "hls.js",
@@ -4538,6 +4550,7 @@
     "exports": ["./layers/alpr/source"],
     "modules": [
       "src/layers/alpr/policy.js",
+      "src/data/displayText.js",
       "src/layers/alpr/records.js",
       "src/layers/alpr/source.js",
       "src/data/tomtomTiles.js",
@@ -5237,6 +5250,7 @@
       "src/layers/submarineCables/bundledSource.js",
       "src/layers/alpr/source.js",
       "src/layers/alpr/policy.js",
+      "src/data/displayText.js",
       "src/layers/alpr/records.js",
       "src/layers/alpr/tileRecords.js",
       "src/sources/infrastructureData.js",
@@ -5244,7 +5258,8 @@
       "src/layers/satellites/classes.js",
       "src/layers/satellites/sensors.js",
       "src/data/ucsSatellites.js",
-      "src/data/imagingSensors.js"
+      "src/data/imagingSensors.js",
+      "src/data/planespottersPhoto.js"
     ],
     "external": ["@mapbox/vector-tile", "pbf"]
   },
