@@ -1627,7 +1627,7 @@ warning, capped and unknown cost states also appear in the dock heading when
 Settings is closed. The existing hard cost cap still stops the session and
 announces the reason.
 
-Automatic Voice Preview uses output from the active mounted provider, including late replies that may answer an older request. Manual panel choices remain until genuine local input rearms automatic presentation. Preview stays off when disabled, remains hidden in Cockpit, and retires on Stop or provider replacement. Display events do not grant command authority.
+Automatic Voice Preview uses output from the active mounted provider, including late replies that may answer an older request. Manual panel choices remain until genuine local input rearms automatic presentation. Preview stays off when disabled, remains hidden in Cockpit, and retires on Stop or provider replacement. In the panel, the last reply stays until the next turn replaces it; only the voice card floating on a control without the panel hides 14 s after its last update. Display events do not grant command authority.
 
 Typed chat sits beside voice in the dock. Chat replies are silent and never
 request microphone access. The first message connects with the selected
@@ -1657,6 +1657,12 @@ and the chat shows a matching message.
 
 Chat and the voice panel sit above the dock or dock into the right rail's lane,
 which hides the rail until the panel minimizes or closes, or a rail panel opens.
+A voice or chat action that selects something (`select_nearest_aircraft`,
+`track_entity`) opens its card in the Context panel as a click on it does
+(`createContextCardOpener` in `src/ui/stores/entityCard.js`, handed to voice by the app), except in
+Cockpit (as Cockpit's own state reports it) or when another card was picked
+while the action ran, which then stays, and steps a panel docked in the lane down to its bar so the rail
+shows it; a panel above the dock leaves the rail in view and stays as it is.
 Minimized panels always sit as a bar centred above the dock; restoring returns a
 docked panel to the lane. A centred panel steps down to its bar when the pointer
 reaches the Location or Visual Presets button and rests above an open tray,
@@ -2086,6 +2092,16 @@ as its own option, and a native list sends no change for the option it
 already shows, so the list cannot pick that camera: FOCUS does, and so does
 NEAREST when that camera is the nearest. Closing the list without a choice
 keeps automatic selection.
+
+The active camera's pictures follow what can be seen. The monitor plane skips
+its 10 s still while the renderer reports it off screen or below the horizon,
+and fetches on the first refresh tick after it is back. Activating or
+calibrating a camera bypasses visibility and the usual refresh interval, but
+still waits for an in-flight request and the provider's minimum interval.
+The panel's still and live video run only while the tab is visible and the
+panel is open (on phones, the Cameras sheet). The still also loads while
+Context shows the camera's card (on phones, the Context sheet) or its bigger
+view is open.
 
 Traffic owns its rendered-surface observer only while enabled, removes it on disable/destroy, and rebuilds no cached heights on frames where the surface identity is unchanged. Its dots and heat-lines are two renderer draw sets, it animates on the frame port's preRender, and it follows the camera through the camera port at its own 5% threshold rather than the shared `percentageChanged` ledger. The surface identity is the globe port's `surfaceVersion()` and tile readiness its `isSettled('surface')`, so the layer no longer reaches Cesium. Heat-lines are always asked for draped: where the Cesium renderer cannot drape (no depth textures) its draw port draws them (and every other draped line) over the surface, in their colour where the surface hides them and hidden past the horizon, recolouring a line in place when only its colour changes, rather than the layer dropping them.
 
@@ -9083,8 +9099,17 @@ apply to `public/` assets or built-preview serving.
   ending, by its own switch or one of its layers going off, restores the
   pre-Contacts layers but keeps the ridden one and the view; Live Signals then
   drops the rows Contacts built and shows `CONTEXT STANDBY`. The visible
-  Cockpit actions, double-click and voice use the same gate; voice entry still
-  opens Contacts first, as its layer-targeted entry navigates through Contacts.
+  Cockpit actions, double-click and voice use the same gate. Voice entry, like
+  the COCKPIT button, never turns Contacts or detection on. A
+  voice entry that names a layer or class ("a military helicopter") searches
+  the aircraft that layer shows under the person's filters, nearest first,
+  from the followed aircraft or the ground under the camera, and follows the
+  nearest match (the followed aircraft counts when it matches) before it
+  enters (`_retargetCockpitEntryLayer` in `src/ui/cockpitCoordinator.js`). A
+  military request while Military Flights is off switches that layer on as a
+  plain layer the person can switch off, waits for its first data before
+  searching, and switches it off again if entry then fails; a layer that was
+  already on stays on. Contacts stays as it is.
   The ship bridge and the orbital view have their own own-layer gates
   (`bridgeEntryAllowed`, `orbitEntryAllowed`; see
   [Ship bridge view](#ship-bridge-view) and [Orbital view](#orbital-view)).

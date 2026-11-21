@@ -183,6 +183,8 @@ export type Capability =
   | 'pickPosition'
   /** Points tested against the frame's depth (`query.occlusionTest`). */
   | 'occlusionTest'
+  /** Conservative camera visibility of a point set (`camera.visiblePoints`). */
+  | 'pointVisibility'
   /** Outward user zooms that keep the Earth framed (`controls.keepEarthFramed`). */
   | 'keepEarthFramed'
   /** Height sampling against tiles and terrain. */
@@ -205,6 +207,8 @@ export type Capability =
   | 'fields'
   /** Rate-limited course easing (`IconItem.courseGlide`). */
   | 'courseGlide'
+  /** Lines that fade with the age of their points (`LineItem.ageFade`). */
+  | 'lineAgeFade'
   /** Screen-space clustering of icons. */
   | 'cluster'
   /** Post-processing styles. */

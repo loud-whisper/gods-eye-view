@@ -81,6 +81,13 @@ optional:
   target's east-north-up frame, or the identity. `setView` keeps that frame
   while it places a world pose. A share link's follow offset is
   re-expressed in it, satellites included.
+- `camera.visiblePoints(points, horizonMarginM)` (capability `pointVisibility`)
+  is whether any of the points may be on screen: `false` only when their
+  bounding sphere is outside the view or all of them are below the horizon
+  of the WGS84 ellipsoid shrunk by `horizonMarginM` metres; `null` when it
+  cannot tell (not a 3D scene, an empty point set, or a non-finite point or
+  camera vector), and callers count that as visible. Supply a finite,
+  nonnegative margin smaller than the shortest WGS84 radius.
 - `globe.surfaceVersion()` (capability `surfaceIdentity`) is a number that
   changes whenever what surface heights answer against changes (base,
   terrain or photoreal route swapped, the globe shown or hidden) and never
@@ -115,6 +122,23 @@ optional:
 - A line item's `depthFail` style, solid or dashed, draws the parts behind
   the surface (the Draw tool's rubber band is dashed there too); without one
   they are hidden.
+- `LineItem.ageFade` (capability `lineAgeFade`, `LineAgeFade`) fades a
+  line with the age of its points on the scene clock (`frame.setTime`):
+  each position has a time, a point's recency is
+  `1 - clamp((now - time) / windowMs, 0, 1)`, running evenly between
+  positions, and the line's colour (its style's or a segment's) draws at its
+  alpha times `mix(alphaFloor, 1, smoothstep(0, 1, recency))`, times
+  `mix(squaredAlphaFloor, 1, recency²)` with `squaredAlphaFloor`, and
+  `widthPx` times `mix(widthFloor, 1, recency)` wide with `widthFloor`. Time
+  passing changes the drawing, not the line, so a trail whose points stay
+  put is never sent again; new times with new positions are an ordinary
+  update. A renderer without the capability draws the line unfaded. The
+  Cesium port lists it where its context has floating-point textures: an
+  aged line's material reads its points' times from a small texture and the
+  scene's time from a uniform set each frame, per fragment (draped lines
+  along their length, others per vertex), and an undraped one moves and
+  recolours in place in its polyline collection. The check
+  `draw.lines.ageFade` covers it, draped and not, narrowed too.
 - A solid line's `outline.widthPx` is the outline's whole width, half on
   each side, inside the line's own width: an 8 px line with a 4 px outline
   is 2 px of outline, 4 px of colour and 2 px of outline, as Cesium draws
